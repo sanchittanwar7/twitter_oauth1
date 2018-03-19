@@ -1,0 +1,59 @@
+// 		var crypto = require('crypto'),
+// 		consumerKey       = 'gRVg8FedIrQJEvhFncYyflRJ7',
+// 		consumerSecret    = 'ZAQKCqoUHpe8SzasjBY4Eav8l3pbXSkXUMEFxtlgYhDPbWIS5R',
+// 		accessToken 	  = '800676789878042628-rffrqn6178ffKyXeYqm7khATWnq0unz',
+// 		accessTokenSecret = 'Xls05qnlzqhbPAWixlFjbF1GwCH0LnUOO2pB2f0xRIi6q',
+// 		callback 		  = 'http://127.0.0.1:3000',
+// 		url  			  = 'https://api.twitter.com/oauth/request_token',
+// 		date 			  = new Date,
+// 		method 			  = 'POST';
+// 		var reqObj = {
+// 			// oauth_callback: callback,
+// 			oauth_consumer_key: consumerKey,
+// 			oauth_nonce: Math.random().toString(36).replace(/[^a-z]/, '').substr(2),
+// 			oauth_signature_method: 'HMAC-SHA1',
+// 			oauth_timestamp: `${Math.floor(date.getTime() / 1000)}`,
+// 			oauth_token: accessToken,
+// 	  oauth_version: '1.0'//,
+// 	  //search_expression: 'banana' //add here request param if necessary
+// 	};
+
+// 	// construct a param=value& string and uriEncode
+// 	var paramsStr = '';
+// 	for (var i in reqObj) {
+// 		paramsStr += "&" + i + "=" + reqObj[i];
+// 	}
+
+// 	// yank off that first "&"
+// 	paramsStr = paramsStr.substr(1);
+
+// 	var sigBaseStr = method + "&"
+// 	+ encodeURIComponent(url)
+// 	+ "&"
+// 	+ encodeURIComponent(paramsStr);
+
+// 	consumerSecret += "&" + accessTokenSecret;
+
+// 	var hashedBaseStr  = crypto.createHmac('sha1', consumerSecret).update(sigBaseStr).digest('base64');
+
+// 	// Add oauth_signature to the request object
+// 	reqObj.oauth_signature = encodeURIComponent(hashedBaseStr);
+// 	// reqObj.oauth_callback = callback;
+
+// 	var authorization = 'OAuth ';
+// 	for (var i in reqObj) {
+// 		authorization += i + '="'+ reqObj[i] + '",';
+// 	}
+
+// 	console.log(reqObj)
+// 	console.log(authorization.substring(0,authorization.length - 1))
+// 	// authorization = authorization.substring(0,authorization.length - 1)
+// 	HTTP.call(method, url, {
+// 		headers: {Authorization: authorization},
+// 		params: {oauth_callback: callback }
+// 	}, function (error, result) {
+// 		console.log(error)
+// 		if (!error) {
+// 			console.log(result);
+// 		}
+// 	});	
