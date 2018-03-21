@@ -1,39 +1,41 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import { Session } from 'meteor/session'
+import TwitterLogin from '../../ui/TwitterLogin'
+import Token from '../../api/tokens'
 
 
 export default class App extends Component {
-	constructor(props){
-		super(props);
-		this.twitterLogin = this.twitterLogin.bind(this);
+	
+
+	constructor(props) {
+		super(props)
+		this.state = {
+			userId: null
+		}
 	}
 
-	twitterLogin() {
-		Meteor.call("get_request_token", (err, res) => {
+	componentWillMount(){
+		Meteor.call("get_current_user", (err, res) => {
 			if(err)
 				console.log(err)
 			else{
-				console.log(res)
-				Session.set('responds', res.secret)
-								// console.log(Session)
+				current_user = res
+				this.setState({userId: current_user})
+		console.log(res)
+}
+})
+}
 
-				this.anchor.href = `https://api.twitter.com/oauth/authenticate?oauth_token=${res.token}`
-				res = this.anchor.click();
-			}
-		})
-	}
-
-
-	render() {
+render() {
+	
+		// console.log(current_user)
 		return(
-			<div>
-			<button onClick = {this.twitterLogin.bind(this)}>Login with Twitter</button>
-			<a style = {{ display: "none" }} href="#"
-			ref = {el => {this.anchor = el; }}>
-			</a>
-			</div>
+			<TwitterLogin 
+			userId = {this.state.userId}
+			/>
 			)
+		
 	}
 }
 
