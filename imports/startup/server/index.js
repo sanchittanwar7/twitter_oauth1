@@ -3,7 +3,7 @@ import url from 'url'
 import { WebApp } from 'meteor/webapp'
 import './twitter_methods'
 import { Session } from 'meteor/session'
-import { Tokens } from '../../api/tokens'
+import { Token } from '../../api/tokens'
 
 
 
@@ -21,7 +21,7 @@ Meteor.startup(() => {
 	})
 	Meteor.publish("tokens",function(){
 		if(this.userId){
-			return Tokens.find({ uid: this.userId});
+			return Token.find({ userId: this.userId});
 		}
 	});
 })
