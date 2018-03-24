@@ -37,9 +37,22 @@ export default class Signup extends Component{
       })
       return
     }
+
+
+
+
     Accounts.createUser({email,password},(err)=>{
-      if(err)
-      console.log(err);
+      if(err){
+        console.log("err", err);
+        console.log(email, password)
+        Meteor.loginWithPassword({email: email}, password, (err) => {
+          if(err)
+            console.log(err)
+          else
+            console.log("logged in")
+        })
+
+      }
       else {
         console.log("succesfully authenticated");
         this.setState({email:"",password:"",error:""})
@@ -56,6 +69,6 @@ export default class Signup extends Component{
       <input  value ={this.state.password} type="password" onChange = {this.onChangePassword} placeholder="password"/>
       <button onClick={this.submitForm}>Submit</button>
       </div>
-    )
+      )
   }
 }

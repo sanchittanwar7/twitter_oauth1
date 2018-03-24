@@ -10,7 +10,20 @@ Meteor.methods({
 	"get_current_user"(){
 		return this.userId
 	},
-	"get_tokens"(userId) {
-		return Token.findOne({userId})
+	"get_tokens"() {
+		let token = Token.findOne({inUse: false})
+		if(token === undefined)
+			return undefined
+		let userId = token.userId
+		Token.update(
+				{userId: userId},
+				{
+					$set : {
+						
+						"inUse": true
+					}
+				}
+		)
+		return token
 	}
 })

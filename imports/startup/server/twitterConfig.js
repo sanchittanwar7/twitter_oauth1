@@ -1,5 +1,5 @@
 
-export default get_followers = (oauth_access_token, oauth_access_token_secret) => {
+export default get_appConfig = (oauth_access_token, oauth_access_token_secret) => {
 
 	let Twit = require('twit');
 

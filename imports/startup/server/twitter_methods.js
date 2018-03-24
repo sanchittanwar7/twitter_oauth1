@@ -3,7 +3,7 @@ import { HTTP } from 'meteor/http'
 import { getOAuthRequestToken } from './oauth'
 import { getOAuthAccessToken } from './oauth'
 import {Token} from '../../api/tokens'
-
+import get_appConfig from './twitterConfig'
 
 
 
@@ -34,26 +34,11 @@ Meteor.methods({
 				{
 					$set : {
 						"access_token": res.oauth_access_token,
-						"access_token_secret": res.oauth_access_token_secret
+						"access_token_secret": res.oauth_access_token_secret,
+						"inUse": false
 					}
 				}
-			)
-			// Meteor.call("insert_token", res, (err, response) => {
-			// 	if(err)
-			// 		console.log(err)
-			// 	else
-			// 		console.log(response)
-			// })
-			
-
-			// console.log(appConfig)
-
-			// await appConfig.get('followers/list', { screen_name: 'ICC' , count : 2 ,cursor : -1}, (err,res) => {
-			// 	if(err)
-			// 		console.log(err)
-			// 	else
-			// 		console.log(res)
-			// } );
+				)
 
 		}catch(err) {
 			console.log('error', error)
@@ -61,8 +46,47 @@ Meteor.methods({
 		}
 		return res;
 	},
-	"get_followers"(screen_name) {
+	async "get_followers"(screen_name) {
+		let followers = []
+		let length = 0, new_appConfig;
 		let next_cursor = -1;
+		let tokens = Meteor.call("get_tokens")
+		if(tokens) {
+			let appConfig = get_appConfig(tokens.access_token, tokens.access_token_secret)
+			while(next_cursor != 0){
+				try{
+					let result = await appConfig.get('followers/list', { screen_name: screen_name , count : 10 ,cursor : next_cursor})
+					length += 200
+					console.log("ressssssssssssssssssssssssssssss", result.resp.caseless.dict['x-rate-limit-remaining'])
+					console.log("got the dataaaaaaaaaaaaaaaaaaaaaaaaaaaaa", result.data)
+					result.data.users.forEach((follower) => {
+						followers.push(follower)
+					})
+					next_cursor = result.data.next_cursor
+					if(result.resp.caseless.dict['x-rate-limit-remaining'] <= 8){
+						let new_tokens = Meteor.call("get_tokens")
+						console.log("new token", new_tokens)
+						if(new_tokens === undefined){
+							next_cursor = 0
+							
+						}
+						else{
+							new_appConfig = get_appConfig(new_tokens.access_token, new_tokens.access_token_secret)
+							console.log("new appConfig", new_appConfig)
+						}
+					}
+					appConfig = new_appConfig !== undefined ? new_appConfig : appConfig
+					new_appConfig = undefined
+					console.log("updated appConfig", appConfig)
+				}catch(err){
+					console.log(err)
+				}
+			}
+		}
+		else{
+			console.log("No free token")
+		}
+		return followers;
 	}
 
 })
