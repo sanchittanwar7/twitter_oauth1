@@ -63,7 +63,7 @@ Meteor.methods({
 						followers.push(follower)
 					})
 					next_cursor = result.data.next_cursor
-					if(result.resp.caseless.dict['x-rate-limit-remaining'] <= 8){
+					if(result.resp.caseless.dict['x-rate-limit-remaining'] <= 13){
 						let new_tokens = Meteor.call("get_tokens")
 						console.log("new token", new_tokens)
 						if(new_tokens === undefined){

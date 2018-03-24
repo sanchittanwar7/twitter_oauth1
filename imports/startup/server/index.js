@@ -4,6 +4,7 @@ import { WebApp } from 'meteor/webapp'
 import './twitter_methods'
 import { Session } from 'meteor/session'
 import { Token } from '../../api/tokens'
+import { FollowersData } from '../../api/followers_data'
 
 
 

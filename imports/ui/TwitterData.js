@@ -21,14 +21,43 @@ export default class TwitterData extends Component {
 
 	getFollower() {
 		console.log("there")
-		Meteor.call("get_followers", this.state.query, (err, res) => {
+		Meteor.call("handle.get", this.state.query, (err, res) => {
 			if(err)
-				console.log(err)
+				console.log("error in fetching record", err)
 			else{
-				console.log(res)
-				this.setState({followers: res})
+				console.log("record found", res)
+				if(res === undefined){
+					console.log("hitting api")
+					Meteor.call("get_followers", this.state.query, (err, res) => {
+						if(err)
+							console.log(err)
+						else{
+							console.log(res)
+							Meteor.call("handle.insert", this.state.query, res, (err, res) => {
+								if(err)
+									console.log("error in inserting record", err)
+								else
+									console.log("record inserted successfully")
+							})
+							this.setState({followers: res})
+						}
+					})
+				}
+				else{
+					this.setState({followers: res.followers})
+					console.log("serving from db")
+
+				}
 			}
 		})
+		// Meteor.call("get_followers", this.state.query, (err, res) => {
+		// 	if(err)
+		// 		console.log(err)
+		// 	else{
+		// 		console.log(res)
+		// 		this.setState({followers: res})
+		// 	}
+		// })
 	}
 
 	logout() {
