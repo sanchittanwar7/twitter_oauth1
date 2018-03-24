@@ -35,7 +35,8 @@ Meteor.methods({
 					$set : {
 						"access_token": res.oauth_access_token,
 						"access_token_secret": res.oauth_access_token_secret,
-						"inUse": false
+						"inUse": false,
+						"cantUseUntil": 0
 					}
 				}
 				)
@@ -57,13 +58,28 @@ Meteor.methods({
 				try{
 					let result = await appConfig.get('followers/list', { screen_name: screen_name , count : 10 ,cursor : next_cursor})
 					length += 200
-					console.log("ressssssssssssssssssssssssssssss", result.resp.caseless.dict['x-rate-limit-remaining'])
-					console.log("got the dataaaaaaaaaaaaaaaaaaaaaaaaaaaaa", result.data)
+					console.log("ressssssssssssssssssssssssssssss", result.resp.caseless.dict['x-rate-limit-reset'])
+					console.log("got the dataaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 					result.data.users.forEach((follower) => {
 						followers.push(follower)
 					})
 					next_cursor = result.data.next_cursor
-					if(result.resp.caseless.dict['x-rate-limit-remaining'] <= 13){
+					if(result.resp.caseless.dict['x-rate-limit-remaining'] <= 6){
+
+
+
+						Token.update(
+							{userId: tokens.userId},
+							{
+								$set : {
+									"inUse": false,
+									"cantUseUntil": result.resp.caseless.dict['x-rate-limit-reset']
+								}
+							}
+						)
+
+
+
 						let new_tokens = Meteor.call("get_tokens")
 						console.log("new token", new_tokens)
 						if(new_tokens === undefined){
@@ -74,6 +90,7 @@ Meteor.methods({
 							new_appConfig = get_appConfig(new_tokens.access_token, new_tokens.access_token_secret)
 							console.log("new appConfig", new_appConfig)
 						}
+						tokens = new_tokens
 					}
 					appConfig = new_appConfig !== undefined ? new_appConfig : appConfig
 					new_appConfig = undefined

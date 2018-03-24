@@ -11,7 +11,10 @@ Meteor.methods({
 		return this.userId
 	},
 	"get_tokens"() {
-		let token = Token.findOne({inUse: false})
+		console.log("searching for token")
+		console.log("current timestamp", Date.now())
+		let token = Token.findOne({inUse: false, cantUseUntil: {$lt: Date.now()}})
+		console.log("found this", token)
 		if(token === undefined)
 			return undefined
 		let userId = token.userId
